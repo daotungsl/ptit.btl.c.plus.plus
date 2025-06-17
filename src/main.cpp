@@ -1,6 +1,7 @@
 #include "login.h"
 #include "register.h"
 #include "factory.h"
+#include "login.h"
 
 using namespace std;
 
@@ -27,6 +28,7 @@ int main() {
 		switch (choice) {
 		case 1:
 			print("Login call!", true);
+			login();
 			break;
 		case 2:
 			print("Register call!", true);
