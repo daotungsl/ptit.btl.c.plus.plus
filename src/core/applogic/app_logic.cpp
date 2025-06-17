@@ -2,8 +2,7 @@
 #include "../include/factory.h"
 #include "../../core/menu/manager_menu.h"
 #include "../../core/menu/user_menu.h"
-#include "../../core/auth/login.h"
-#include "../../core/auth/register.h"
+#include "../../core/auth/auth.h"
 
 using namespace std;
 
@@ -29,11 +28,11 @@ void runApplication() {
 
 			switch (choice) {
 				case 1:
-					role = login();
+					role = handleLogin();
 					if (role == UserRole::Failed) pause();
 					break;
 				case 2:
-					registerUser();  // ← gọi đúng hàm tạo tài khoản từ auth
+					handleRegister();  // ← gọi đúng hàm tạo tài khoản từ auth
 					pause();
 					break;
 				case 0:
