@@ -35,3 +35,5 @@
 /CMakeSettings.json
 /out/build/x64-Debug
 /build
+.vscode/settings.json
+.vscode/c_cpp_properties.json
