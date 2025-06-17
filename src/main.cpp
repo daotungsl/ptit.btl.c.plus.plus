@@ -1,4 +1,5 @@
-#include <app_logic.h>
+#include "../src/core/applogic/app_logic.h"
+
 
 
 int main() {

@@ -1,10 +1,9 @@
-#include "../../include/login.h"
-#include "../../include/register.h"
-#include "../../include/factory.h"
-#include "../../entities/User.h"
-
-#include "../core/manager_menu.h"  
-#include "../core/user_menu.h"     
+#include "../entities/User.h"
+#include "../include/factory.h"
+#include "../../core/menu/manager_menu.h"
+#include "../../core/menu/user_menu.h"
+#include "../../core/auth/login.h"
+#include "../../core/auth/register.h"
 
 using namespace std;
 
@@ -34,7 +33,8 @@ void runApplication() {
 					if (role == UserRole::Failed) pause();
 					break;
 				case 2:
-					print("Register call!", true);
+					registerUser();  // ← gọi đúng hàm tạo tài khoản từ auth
+					pause();
 					break;
 				case 0:
 					print("Goodbye!", true);

@@ -1,4 +1,4 @@
-#include "../../include/factory.h"
+#include "../include/factory.h"
 
 void showManagerMenu() {
     int choice = -1;
