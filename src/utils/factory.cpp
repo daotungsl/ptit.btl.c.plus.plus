@@ -2,6 +2,7 @@
 #include <limits>
 #include "factory.h"
 
+
 using namespace std;
 
 void print(const string& message, bool addNewLine) {

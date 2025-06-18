@@ -3,22 +3,10 @@
 #include "../entities/User.h"
 using namespace std;
 
-UserRole login() {
-    print("===== LOGIN =====", true);
-
-    string userId = input("Nhap ID: ");
-    string password = input("Nhap Password: ");
-
-    print("Dang xac thuc...", true);
-
-    if (userId == "admin" && password == "123") {
-        print("Dang nhap voi quyen QUAN LY", true);
-        return UserRole::Manager;
-    } else if (userId == "user" && password == "123") {
-        print("Dang nhap voi quyen NGUOI DUNG", true);
-        return UserRole::User;
-    } else {
-        print("Sai ID hoac Password.", true);
-        return UserRole::Failed;
-    }
+User login() {
+// viết nội dung màn hình và xử lý đăng nhập tại đây.
+// tài khoản của quản lý là: admin. Tài khoản của người dùng là user
+// mật khẩu đều là 123
+// hàm yêu cầu trả về class user khi đăng nhập xong
+return User("abcd","123",UserRole::Failed);
 }

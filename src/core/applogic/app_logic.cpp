@@ -32,7 +32,7 @@ void runApplication() {
 					if (role == UserRole::Failed) pause();
 					break;
 				case 2:
-					handleRegister();  // ← gọi đúng hàm tạo tài khoản từ auth
+					handleRegister(); 
 					pause();
 					break;
 				case 0:
