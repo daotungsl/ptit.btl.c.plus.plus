@@ -7,12 +7,12 @@
 using namespace std;
 
 // Hàm tạo mật khẩu ngẫu nhiên
-std::string generateRandomPassword() {
-    const std::string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    std::string password;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, chars.size() - 1);
+string generateRandomPassword() {
+    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    string password;
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dist(0, chars.size() - 1);
 
     for (int i = 0; i < 8; ++i) {
         password += chars[dist(gen)];
@@ -21,33 +21,30 @@ std::string generateRandomPassword() {
     return password;
 }
 
-// Hàm tạo đối tượng User mới (tách logic cho rõ ràng)
-User buildUser(const std::string& username, const std::string& password) {
+// Hàm tạo đối tượng User mới (mặc định role là User)
+User buildUser(const string& username, const string& password) {
     return User(username, password, UserRole::User);
 }
 
 // Hàm đăng ký người dùng
 void registerUser() {
-    std::string username, password;
+    string username, password;
 
-    std::cout << "===== DANG KY TAI KHOAN MOI =====" << std::endl;
-    std::cout << "Nhap ten tai khoan: ";
-    std::cin >> username;
+    printTitle("DANG KY TAI KHOAN MOI");
 
-    std::cout << "Nhap mat khau (bo trong de tao mat khau ngau nhien): ";
-    std::cin.ignore(); // loại bỏ ký tự newline
-    std::getline(std::cin, password);
+    username = input("Nhap ten tai khoan: ");
+    password = input("Nhap mat khau (bo trong de tao mat khau ngau nhien): ");
 
     if (password.empty()) {
         password = generateRandomPassword();
-        std::cout << "Mat khau ngau nhien cua ban la: " << password << std::endl;
+        print("Mat khau ngau nhien cua ban la: " + password, true);
     }
 
-    // Tạo user
     User newUser = buildUser(username, password);
 
-    // Lưu user vào file
-    if (!UserFileHelper::saveUserToFile(newUser)) {
-        std::cerr << "Loi khi luu thong tin nguoi dung.\n";
+    if (UserFileHelper::saveUserToFile(newUser)) {
+        print("Dang ky thanh cong!", true);
+    } else {
+        print("Loi khi luu thong tin nguoi dung.", true);
     }
 }
