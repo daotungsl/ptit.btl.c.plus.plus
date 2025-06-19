@@ -3,7 +3,7 @@
 
 #include "../entities/User.h"
 
-UserRole handleLogin();
+User handleLogin();
 void handleRegister();
 
 #endif

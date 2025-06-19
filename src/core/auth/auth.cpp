@@ -1,8 +1,9 @@
 #include "auth.h"
 #include "login.h"
 #include "register.h"
+#include "../entities/User.h"
 
-UserRole handleLogin() {
+User handleLogin() {
     return login();
 }
 

@@ -2,6 +2,7 @@
 #define USER_H
 
 #include <string>
+#include "Wallet.h"  // Gắn ví người dùng
 
 // Vai trò người dùng khi đăng nhập thành công (hoặc thất bại)
 enum class UserRole {
@@ -13,31 +14,37 @@ enum class UserRole {
 class User {
 private:
     std::string username;
+    std::string displayName;
     std::string password;
     UserRole role;
+    Wallet wallet;  // Gắn thêm ví
 
 public:
-    // Constructor
-    User(const std::string& username, const std::string& password, UserRole role = UserRole::Failed)
-        : username(username), password(password), role(role) {}
+    // Constructor đầy đủ
+    User(const std::string& username, const std::string& password,
+         UserRole role = UserRole::Failed, const std::string& displayName = "")
+        : username(username), displayName(displayName), password(password), role(role), wallet() {}
+
+    // Constructor mặc định
+    User() : username(""), displayName(""), password(""), role(UserRole::Failed), wallet() {}
 
     // Getter
     std::string getUsername() const { return username; }
+    std::string getDisplayName() const { return displayName; }
     std::string getPassword() const { return password; }
     UserRole getRole() const { return role; }
+    Wallet& getWallet() { return wallet; }
+    const Wallet& getWallet() const { return wallet; }
 
     // Setter
     void setUsername(const std::string& newUsername) { username = newUsername; }
+    void setDisplayName(const std::string& newDisplayName) { displayName = newDisplayName; }
     void setPassword(const std::string& newPassword) { password = newPassword; }
     void setRole(UserRole newRole) { role = newRole; }
 
-    // Kiểm tra có phải quản lý không
+    // Kiểm tra vai trò
     bool isManager() const { return role == UserRole::Manager; }
-
-    // Kiểm tra có phải người dùng không
     bool isUser() const { return role == UserRole::User; }
-
-    // Kiểm tra đăng nhập thất bại
     bool isFailed() const { return role == UserRole::Failed; }
 };
 

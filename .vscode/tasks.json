@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build with MSVC (cl.exe)",
+      "type": "shell",
+      "command": "cl.exe",
+      "args": [
+        "/std:c++17",
+        "/EHsc",
+        "main.cpp",          // 👈 thay bằng tên file chính của bạn
+        "/Fe:main_msvc.exe"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build using Microsoft cl.exe"
+    }
+  ]
+}

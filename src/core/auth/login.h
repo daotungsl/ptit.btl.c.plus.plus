@@ -2,7 +2,7 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
-UserRole login();
+User login();
 
 
 #endif

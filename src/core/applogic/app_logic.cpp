@@ -8,10 +8,9 @@ using namespace std;
 
 void runApplication() {
 	int choice = -1;
-	UserRole role = UserRole::Failed;
-
+	User user;
 	do {
-		if (role == UserRole::Failed) {
+		if (user.getRole() == UserRole::Failed) {
 			printTitle("WELLCOME TO Reward Wallet Management");
 
 			print("1. Login", true);
@@ -28,8 +27,8 @@ void runApplication() {
 
 			switch (choice) {
 				case 1:
-					role = handleLogin();
-					if (role == UserRole::Failed) pause();
+					user = handleLogin();
+					if (user.getRole() == UserRole::Failed) pause();
 					break;
 				case 2:
 					handleRegister(); 
@@ -44,12 +43,12 @@ void runApplication() {
 			}
 		} else {
 			// Đã đăng nhập thành công
-			if (role == UserRole::Manager) {
-				showManagerMenu();
+			if (user.getRole() == UserRole::Manager) {
+				showManagerMenu(user);
 			} else {
-				showUserMenu();
+				showUserMenu(user);
 			}
-			role = UserRole::Failed;  // Đăng xuất sau khi thoát menu
+			user.setRole(UserRole::Failed);  // Đăng xuất sau khi thoát menu
 		}
 	} while (choice != 0);
 }

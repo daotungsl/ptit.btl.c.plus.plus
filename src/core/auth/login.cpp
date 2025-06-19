@@ -8,5 +8,20 @@ User login() {
 // tài khoản của quản lý là: admin. Tài khoản của người dùng là user
 // mật khẩu đều là 123
 // hàm yêu cầu trả về class user khi đăng nhập xong
-return User("abcd","123",UserRole::Failed);
+    string username, password;
+
+	printTitle("DANG NHAP HE THONG");
+    username = input("Tai khoan: ");
+    password = input("Mat khau: ");
+
+    if (username == "admin" && password == "123") {
+        print("Dang nhap thanh cong voi vai tro QUAN LY.", true);
+        return User(username, password, UserRole::Manager,username);
+    } else if (username == "user" && password == "123") {
+        print("Dang nhap thanh cong voi vai tro NGUOI DUNG.", true);
+        return User(username, password, UserRole::User,username);
+    } else {
+        print("Dang nhap that bai. Sai tai khoan hoac mat khau.", true);
+        return User(username, password, UserRole::Failed,username);
+    }
 }
