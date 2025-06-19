@@ -5,41 +5,30 @@
 #include <ctime>
 
 enum class TransactionType {
-    Deposit,   // Nạp điểm
-    Transfer   // Chuyển điểm
+    Deposit,
+    Transfer
 };
 
 class Transaction {
 private:
     TransactionType type;
-    std::string fromUsername;   // Nếu là nạp thì có thể là "SYSTEM"
-    std::string toUsername;     // Nếu là nạp thì là chính người nhận
+    std::string fromWalletId;
+    std::string toWalletId;
     int amount;
-    std::time_t timestamp;      // Thời gian thực hiện
+    std::time_t timestamp;
 
 public:
-    // Constructor
-    Transaction(TransactionType type, const std::string& from, const std::string& to, int amount)
-        : type(type), fromUsername(from), toUsername(to), amount(amount), timestamp(std::time(nullptr)) {}
+    Transaction(TransactionType type, const std::string& from, const std::string& to, int amount);
 
-    // Getter
-    TransactionType getType() const { return type; }
-    std::string getFromUsername() const { return fromUsername; }
-    std::string getToUsername() const { return toUsername; }
-    int getAmount() const { return amount; }
-    std::time_t getTimestamp() const { return timestamp; }
+    std::string getFromWalletId() const;
+    std::string getToWalletId() const;
+    int getAmount() const;
+    std::time_t getTimestamp() const;
+    TransactionType getType() const;
 
-    // Trả về chuỗi mô tả giao dịch
-    std::string toString() const {
-        char buffer[100];
-        std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&timestamp));
-
-        std::string typeStr = (type == TransactionType::Deposit) ? "Nap diem" : "chuyen diem";
-        return "[" + std::string(buffer) + "] " + typeStr +
-               " | tu: " + fromUsername +
-               " → den: " + toUsername +
-               " | so diem: " + std::to_string(amount);
-    }
+    std::string toString() const;
 };
+
+void recordTransaction(const Transaction& tx);  // <- Hàm ghi log, sẽ viết ở transaction.cpp
 
 #endif // TRANSACTION_H

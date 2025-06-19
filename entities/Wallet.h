@@ -40,9 +40,6 @@ public:
         points -= amount;
         return true;
     }
-
-    // Gán lại ID nếu cần (hiếm khi dùng)
-    void setWalletId(const std::string& newId) { walletId = newId; }
 };
 
 #endif // WALLET_H
