@@ -13,6 +13,6 @@ void transferPointsUI(User& user);
 bool transferPointsBetweenWallets(const std::string& fromId, const std::string& toId, int amount);
 
 // Gọi giao diện xem lịch sử giao dịch (cài đặt chi tiết trong transactionService.cpp)
-void showTransactionHistory(const User& user);
+void showTransactionHistory(User& user);
 
 #endif // WALLETSERVICE_H

@@ -3,8 +3,10 @@
 #include "../../core/menu/manager_menu.h"
 #include "../../core/menu/user_menu.h"
 #include "../../core/auth/auth.h"
+#include "../include/DataStore.h"
 
 using namespace std;
+using namespace DataStore;
 
 void runApplication() {
 	int choice = -1;
@@ -43,6 +45,7 @@ void runApplication() {
 			}
 		} else {
 			// Đã đăng nhập thành công
+			DataStore::loadAllData();
 			if (user.getRole() == UserRole::Manager) {
 				showManagerMenu(user);
 			} else {

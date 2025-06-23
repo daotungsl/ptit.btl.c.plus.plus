@@ -9,15 +9,35 @@
 Transaction::Transaction(TransactionType type, const std::string& from, const std::string& to, int amount)
     : type(type), fromWalletId(from), toWalletId(to), amount(amount), timestamp(std::time(nullptr)) {}
 
-std::string Transaction::getFromWalletId() const { return fromWalletId; }
-std::string Transaction::getToWalletId() const { return toWalletId; }
-int Transaction::getAmount() const { return amount; }
-std::time_t Transaction::getTimestamp() const { return timestamp; }
-TransactionType Transaction::getType() const { return type; }
+std::string Transaction::getFromWalletId() const {
+    return fromWalletId;
+}
+
+std::string Transaction::getToWalletId() const {
+    return toWalletId;
+}
+
+int Transaction::getAmount() const {
+    return amount;
+}
+
+std::time_t Transaction::getTimestamp() const {
+    return timestamp;
+}
+
+TransactionType Transaction::getType() const {
+    return type;
+}
+
+void Transaction::setTimestamp(std::time_t t) {
+    timestamp = t;
+}
 
 std::string Transaction::toString() const {
     char buffer[100];
-    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&timestamp));
+    std::tm timeInfo = {};
+    localtime_s(&timeInfo, &timestamp);  // An toàn, tránh warning C4996
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeInfo);
 
     std::string typeStr = (type == TransactionType::Deposit) ? "DEPOSIT" : "TRANSFER";
 
@@ -27,9 +47,8 @@ std::string Transaction::toString() const {
            " | Amount: " + std::to_string(amount);
 }
 
-// Ghi giao dịch vào bộ nhớ và file
 void recordTransaction(const Transaction& tx) {
-    // Ghi vào bộ nhớ
+    // Ghi vào bộ nhớ (RAM)
     DataStore::allTransactions.push_back(tx);
 
     // Ghi vào file (dạng json riêng)
