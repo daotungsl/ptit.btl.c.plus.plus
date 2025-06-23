@@ -1,7 +1,10 @@
 #include "../entities/Transaction.h"
+#include "../include/UserFileHelper.h"
+#include "../include/DataStore.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <ctime>
 
 Transaction::Transaction(TransactionType type, const std::string& from, const std::string& to, int amount)
     : type(type), fromWalletId(from), toWalletId(to), amount(amount), timestamp(std::time(nullptr)) {}
@@ -24,13 +27,13 @@ std::string Transaction::toString() const {
            " | Amount: " + std::to_string(amount);
 }
 
-// Ghi giao dịch vào file (append)
+// Ghi giao dịch vào bộ nhớ và file
 void recordTransaction(const Transaction& tx) {
-    std::ofstream out("transactions.log", std::ios::app);
-    if (out.is_open()) {
-        out << tx.toString() << "\n";
-        out.close();
-    } else {
-        std::cerr << "Khong mo duoc file log giao dich.\n";
+    // Ghi vào bộ nhớ
+    DataStore::allTransactions.push_back(tx);
+
+    // Ghi vào file (dạng json riêng)
+    if (!UserFileHelper::saveTransactionLog(tx)) {
+        std::cerr << "Ghi file log giao dịch thất bại.\n";
     }
 }

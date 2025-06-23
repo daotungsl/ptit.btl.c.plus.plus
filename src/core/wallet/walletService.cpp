@@ -3,22 +3,20 @@
 #include "../entities/Transaction.h"
 #include "../entities/User.h"
 #include "../include/factory.h"
+#include "../include/DataStore.h"
+
 #include <iostream>
 #include <unordered_map>
 #include <stdexcept>
 #include <vector>
 
-// Danh sách tất cả các ví và giao dịch trong hệ thống
-extern std::unordered_map<std::string, Wallet> allWallets;
-extern std::vector<Transaction> allTransactions;
-extern std::vector<User> allUsers;
+using namespace DataStore;
 
 void showWalletMenu(User& user) {
-    // Hiển thị số dư luôn khi vào menu
-    auto it = allWallets.find(user.getWalletId());
-    if (it != allWallets.end()) {
+    Wallet* wallet = getWalletById(user.getWalletId());
+    if (wallet) {
         print("\n===== VI DIEM =====", true);
-        print("So du hien tai: " + std::to_string(it->second.getPoints()) + " diem", true);
+        print("So du hien tai: " + std::to_string(wallet->getPoints()) + " diem", true);
     } else {
         print("Khong tim thay vi cua ban.", true);
         return;
@@ -43,7 +41,7 @@ void showWalletMenu(User& user) {
                 transferPointsUI(user);
                 break;
             case 2:
-                showTransactionHistory(user);  // sẽ gọi hàm bên transactionService sau
+                showTransactionHistory(user);
                 break;
             case 0:
                 return;
@@ -56,15 +54,7 @@ void showWalletMenu(User& user) {
 
 void transferPointsUI(User& user) {
     std::string phone = input("Nhap so dien thoai nguoi nhan: ");
-
-    // Tìm user theo số điện thoại
-    User* receiverUser = nullptr;
-    for (auto& u : allUsers) {
-        if (u.getPhoneNumber() == phone) {
-            receiverUser = &u;
-            break;
-        }
-    }
+    User* receiverUser = getUserByPhone(phone);
 
     if (!receiverUser) {
         print("Khong tim thay nguoi nhan voi so dien thoai da nhap.", true);
@@ -85,8 +75,7 @@ void transferPointsUI(User& user) {
         return;
     }
 
-    // Xac nhan
-    std::string confirm = input("Ban co chac chan muon chuyen " + std::to_string(amount) + 
+    std::string confirm = input("Ban co chac chan muon chuyen " + std::to_string(amount) +
                                 " diem cho " + receiverUser->getUsername() + "? (y/n): ");
     if (confirm != "y" && confirm != "Y") {
         print("Huy giao dich.", true);
@@ -99,25 +88,21 @@ void transferPointsUI(User& user) {
     }
 }
 
-// Giao dịch chuyển điểm giữa hai ví
 bool transferPointsBetweenWallets(const std::string& fromId, const std::string& toId, int amount) {
-    auto fromIt = allWallets.find(fromId);
-    if (fromIt == allWallets.end()) {
+    Wallet* from = getWalletById(fromId);
+    Wallet* to = getWalletById(toId);
+
+    if (!from) {
         std::cout << "Không tìm thấy ví nguồn.\n";
         return false;
     }
-
-    auto toIt = allWallets.find(toId);
-    if (toIt == allWallets.end()) {
+    if (!to) {
         std::cout << "Không tìm thấy ví đích.\n";
         return false;
     }
 
-    Wallet& from = fromIt->second;
-    Wallet& to = toIt->second;
-
-    int originalFrom = from.getPoints();
-    int originalTo = to.getPoints();
+    int originalFrom = from->getPoints();
+    int originalTo = to->getPoints();
 
     try {
         if (originalFrom < amount) {
@@ -125,22 +110,22 @@ bool transferPointsBetweenWallets(const std::string& fromId, const std::string& 
             return false;
         }
 
-        from.setPoints(originalFrom - amount);
-        to.setPoints(originalTo + amount);
+        from->setPoints(originalFrom - amount);
+        to->setPoints(originalTo + amount);
 
         Transaction tx(TransactionType::Transfer, fromId, toId, amount);
-        recordTransaction(tx);  // Ghi log
+        recordTransaction(tx);
         std::cout << "Giao dịch chuyển " << amount << " điểm thành công.\n";
         return true;
 
     } catch (const std::exception& e) {
-        from.setPoints(originalFrom);
-        to.setPoints(originalTo);
+        from->setPoints(originalFrom);
+        to->setPoints(originalTo);
         std::cerr << "Giao dịch thất bại: " << e.what() << ". Đã khôi phục trạng thái.\n";
         return false;
     } catch (...) {
-        from.setPoints(originalFrom);
-        to.setPoints(originalTo);
+        from->setPoints(originalFrom);
+        to->setPoints(originalTo);
         std::cerr << "Giao dịch thất bại do lỗi không xác định. Đã khôi phục trạng thái.\n";
         return false;
     }
