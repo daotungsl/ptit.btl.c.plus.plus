@@ -1,38 +1,136 @@
 #include "../include/UserFileHelper.h"
 #include "../entities/User.h"
+#include "../entities/Wallet.h"
+#include "../entities/Transaction.h"
+#include "../lib/nlohmann/json.hpp"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include "../lib/nlohmann/json.hpp"
+#include <ctime>
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
 
-bool UserFileHelper::saveUserToFile(const User& user) {
-    std::string folderPath = "./data";
-    std::string fileName = user.getUsername() + ".json";
-    std::string filePath = folderPath + "/" + fileName;
+bool UserFileHelper::writeStringToFile(const std::string& fileName, const std::string& content, FileCategory category) {
+    std::string path = buildPath(fileName, category);
 
-    // Tạo thư mục nếu chưa tồn tại
-    if (!fs::exists(folderPath)) {
-        fs::create_directories(folderPath);
-    }
-
-    // Chuẩn bị dữ liệu JSON
-    json jsonDataUser;
-    jsonDataUser["username"] = user.getUsername();
-    jsonDataUser["password"] = user.getPassword();
-    jsonDataUser["role"] = static_cast<int>(user.getRole()); // chuyển enum sang int
-
-    // Ghi vào file
-    std::ofstream outFile(filePath);
+    std::ofstream outFile(path);
     if (outFile.is_open()) {
-        outFile << jsonDataUser.dump(4); // format đẹp
+        outFile << content;
         outFile.close();
-        std::cout << "Dang ky thanh cong! Da luu vao file: " << filePath << "\n";
         return true;
     } else {
-        std::cerr << "Khong the mo file de ghi JSON.\n";
+        std::cerr << "Khong the mo file de ghi: " << path << "\n";
         return false;
     }
 }
+
+std::string UserFileHelper::readStringFromFile(const std::string& fileName, FileCategory category) {
+    std::string path = buildPath(fileName, category);
+
+    std::ifstream inFile(path);
+    if (inFile.is_open()) {
+        std::string content((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+        inFile.close();
+        return content;
+    } else {
+        std::cerr << "Khong the mo file de doc: " << path << "\n";
+        return "";
+    }
+}
+
+std::string UserFileHelper::buildPath(const std::string& fileName, FileCategory category) {
+    std::string baseDir;
+    switch (category) {
+        case FileCategory::User:
+            baseDir = "./data/users";
+            break;
+        case FileCategory::Wallet:
+            baseDir = "./data/wallets";
+            break;
+        case FileCategory::TransactionLog:
+            baseDir = "./data/transactions";
+            break;
+    }
+
+    if (!fs::exists(baseDir)) {
+        fs::create_directories(baseDir);
+    }
+
+    return baseDir + "/" + fileName;
+}
+
+std::string UserFileHelper::getCurrentDate() {
+    time_t now = time(nullptr);
+    tm* t = localtime(&now);
+    char buffer[11];
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d", t);
+    return std::string(buffer);
+}
+
+void UserFileHelper::backupOldFileIfExists(const std::string& path) {
+    if (!fs::exists(path)) return;
+
+    std::string date = getCurrentDate();
+    std::string backupDir = "./backup/" + date;
+
+    if (!fs::exists(backupDir)) {
+        fs::create_directories(backupDir);
+    }
+
+    std::string fileName = fs::path(path).filename().string();
+    std::string backupPath = backupDir + "/" + fileName;
+    fs::rename(path, backupPath);
+}
+
+bool UserFileHelper::saveNewUser(const User& user) {
+    json j;
+    j["username"] = user.getUsername();
+    j["password"] = user.getPassword();
+    j["displayName"] = user.getDisplayName();
+    j["walletId"] = user.getWalletId();
+    j["phoneNumber"] = user.getPhoneNumber();
+    j["role"] = static_cast<int>(user.getRole());
+
+    std::string fileName = user.getUsername() + ".json";
+    std::string path = buildPath(fileName, FileCategory::User);
+    backupOldFileIfExists(path);
+
+    return writeStringToFile(fileName, j.dump(4), FileCategory::User);
+}
+
+bool UserFileHelper::saveNewWallet(const Wallet& wallet) {
+    json j;
+    j["walletId"] = wallet.getWalletId();
+    j["points"] = wallet.getPoints();
+
+    std::string fileName = wallet.getWalletId() + ".json";
+    std::string path = buildPath(fileName, FileCategory::Wallet);
+    backupOldFileIfExists(path);
+
+    return writeStringToFile(fileName, j.dump(4), FileCategory::Wallet);
+}
+
+bool UserFileHelper::saveTransactionLog(const Transaction& tx) {
+    json j;
+    j["type"] = static_cast<int>(tx.getType());
+    j["from"] = tx.getFromWalletId();
+    j["to"] = tx.getToWalletId();
+    j["amount"] = tx.getAmount();
+    j["timestamp"] = tx.getTimestamp(); // cần có getter timestamp
+
+    std::string fileName = "tx_" + std::to_string(std::time(nullptr)) + ".json";
+    return writeStringToFile(fileName, j.dump(4), FileCategory::TransactionLog);
+}
+std::vector<std::string> UserFileHelper::listFilesInCategory(FileCategory category) {
+    std::vector<std::string> files;
+    std::string baseDir = buildPath("", category);  // trả về thư mục gốc
+
+    for (const auto& entry : fs::directory_iterator(baseDir)) {
+        if (entry.path().extension() == ".json") {
+            files.push_back(entry.path().filename().string()); // chỉ tên file
+        }
+    }
+    return files;
+}
+

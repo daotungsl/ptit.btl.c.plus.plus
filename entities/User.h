@@ -3,11 +3,10 @@
 
 #include <string>
 
-// Vai trò người dùng khi đăng nhập thành công (hoặc thất bại)
 enum class UserRole {
-    Failed,     // Sai tài khoản hoặc mật khẩu
-    User,       // Quyền người dùng
-    Manager     // Quyền quản lý
+    Failed,
+    User,
+    Manager
 };
 
 class User {
@@ -16,18 +15,21 @@ private:
     std::string displayName;
     std::string password;
     UserRole role;
-    std::string walletId;  // chỉ lưu mã ví, không lưu đối tượng Wallet
+    std::string walletId;
+    std::string phoneNumber; // << THÊM DÒNG NÀY
 
 public:
     // Constructor đầy đủ
     User(const std::string& username, const std::string& password,
          UserRole role = UserRole::Failed,
          const std::string& displayName = "",
-         const std::string& walletId = "")
-        : username(username), displayName(displayName), password(password), role(role), walletId(walletId) {}
+         const std::string& walletId = "",
+         const std::string& phoneNumber = "") // << THÊM DÒNG NÀY
+        : username(username), displayName(displayName), password(password),
+          role(role), walletId(walletId), phoneNumber(phoneNumber) {}
 
-    // Constructor mặc định
-    User() : username(""), displayName(""), password(""), role(UserRole::Failed), walletId("") {}
+    User() : username(""), displayName(""), password(""),
+             role(UserRole::Failed), walletId(""), phoneNumber("") {}
 
     // Getter
     std::string getUsername() const { return username; }
@@ -35,6 +37,7 @@ public:
     std::string getPassword() const { return password; }
     UserRole getRole() const { return role; }
     std::string getWalletId() const { return walletId; }
+    std::string getPhoneNumber() const { return phoneNumber; } // << THÊM
 
     // Setter
     void setUsername(const std::string& newUsername) { username = newUsername; }
@@ -42,6 +45,7 @@ public:
     void setPassword(const std::string& newPassword) { password = newPassword; }
     void setRole(UserRole newRole) { role = newRole; }
     void setWalletId(const std::string& newWalletId) { walletId = newWalletId; }
+    void setPhoneNumber(const std::string& newPhone) { phoneNumber = newPhone; } // << THÊM
 
     // Kiểm tra vai trò
     bool isManager() const { return role == UserRole::Manager; }

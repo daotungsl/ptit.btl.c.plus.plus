@@ -1,5 +1,6 @@
 #include "../include/factory.h"
 #include "../entities/User.h"
+#include "../include/walletService.h"
 
 void showUserMenu(User currentUser) {
     int choice = -1;
@@ -9,6 +10,7 @@ void showUserMenu(User currentUser) {
         print("1. Xem thong tin ca nhan", true);
         print("2. Thay doi ten hien thi", true);
         print("3. Thay doi mat khau", true);
+        print("4. Vi diem", true);  // <-- Mục mới
         print("0. Dang xuat", true);
 
         std::string choiceStr = input("Lua chon: ");
@@ -35,6 +37,10 @@ void showUserMenu(User currentUser) {
                 std::string newPass = input("Nhap mat khau moi: ");
                 currentUser.setPassword(newPass);
                 print("Da cap nhat mat khau!", true);
+                break;
+            }
+            case 4: {
+                showWalletMenu(currentUser);
                 break;
             }
             case 0:

@@ -8,5 +8,5 @@ User handleLogin() {
 }
 
 void handleRegister() {
-    registerUser();
+    registerNewUser();
 }
