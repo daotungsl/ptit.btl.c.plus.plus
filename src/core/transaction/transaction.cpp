@@ -17,7 +17,10 @@ TransactionType Transaction::getType() const { return type; }
 
 std::string Transaction::toString() const {
     char buffer[100];
-    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&timestamp));
+    std::tm timeInfo = {};
+    localtime_s(&timeInfo, &timestamp);
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeInfo);
+
 
     std::string typeStr = (type == TransactionType::Deposit) ? "DEPOSIT" : "TRANSFER";
 
