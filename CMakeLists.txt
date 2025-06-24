@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(
     include
     entities
+    lib/sha
 )
 
 # Tìm toàn bộ file .cpp trong src và các thư mục con

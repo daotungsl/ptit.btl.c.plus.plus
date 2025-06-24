@@ -1,9 +1,11 @@
+// walletService.cpp - phiên bản cập nhật
 #include "../include/walletService.h"
 #include "../entities/Wallet.h"
 #include "../entities/Transaction.h"
 #include "../entities/User.h"
 #include "../include/factory.h"
 #include "../include/DataStore.h"
+#include "../include/UserFileHelper.h"
 
 #include <iostream>
 #include <unordered_map>
@@ -92,50 +94,37 @@ bool transferPointsBetweenWallets(const std::string& fromId, const std::string& 
     Wallet* from = getWalletById(fromId);
     Wallet* to = getWalletById(toId);
 
-    if (!from) {
-        std::cout << "Khong tim thay vi nguon.\n";
-        return false;
-    }
-    if (!to) {
-        std::cout << "Khong tim thay vi dich.\n";
+    if (!from || !to) {
+        std::cerr << "Khong tim thay vi nguon hoac vi dich.\n";
         return false;
     }
 
-    int originalFrom = from->getPoints();
-    int originalTo = to->getPoints();
-
-    try {
-        if (originalFrom < amount) {
-            std::cout << "So du khong du. Khong the chuyen.\n";
-            return false;
-        }
-
-        from->setPoints(originalFrom - amount);
-        to->setPoints(originalTo + amount);
-
-        Transaction tx(TransactionType::Transfer, fromId, toId, amount);
-        recordTransaction(tx);
-        std::cout << "Giao dich chuyen " << amount << " diem thanh cong.\n";
-        return true;
-
-    } catch (const std::exception& e) {
-        from->setPoints(originalFrom);
-        to->setPoints(originalTo);
-        std::cerr << "Giao dich that bai " << e.what() << ". Da khoi phuc trang thai.\n";
-        return false;
-    } catch (...) {
-        from->setPoints(originalFrom);
-        to->setPoints(originalTo);
-        std::cerr << "Giao dich that bai do loi khong xac dinh. Da khoi phuc trang thai.\n";
+    if (from->getPoints() < amount) {
+        std::cerr << "So du khong du. Khong the chuyen.\n";
         return false;
     }
+
+    from->deductPoints(amount);
+    to->addPoints(amount);
+
+    Transaction tx(TransactionType::Transfer, fromId, toId, amount);
+    UserFileHelper::saveTransactionLog(tx);  // Ghi log riêng
+
+    from->addTransactionId(tx.getTransactionId());
+    to->addTransactionId(tx.getTransactionId());
+
+    UserFileHelper::saveUpdatedWallet(*from);
+    UserFileHelper::saveUpdatedWallet(*to);
+
+    std::cout << "Chuyen " << amount << " diem thanh cong!\n";
+    return true;
 }
+
 void showTransactionHistory(User& user) {
     std::string walletId = user.getWalletId();
     const auto& transactions = getAllTransactions();
 
     print("\n===== LICH SU GIAO DICH =====", true);
-
     bool found = false;
     for (const auto& tx : transactions) {
         if (tx.getFromWalletId() == walletId || tx.getToWalletId() == walletId) {
@@ -143,9 +132,7 @@ void showTransactionHistory(User& user) {
             found = true;
         }
     }
-
     if (!found) {
         print("Khong co giao dich nao lien quan toi vi cua ban.", true);
     }
 }
-

@@ -1,6 +1,8 @@
+// user_menu.cpp - cập nhật để backup khi đổi mật khẩu và đăng xuất
 #include "../include/factory.h"
 #include "../entities/User.h"
 #include "../include/walletService.h"
+#include "../include/UserFileHelper.h"
 
 void showUserMenu(User currentUser) {
     int choice = -1;
@@ -10,7 +12,7 @@ void showUserMenu(User currentUser) {
         print("1. Xem thong tin ca nhan", true);
         print("2. Thay doi ten hien thi", true);
         print("3. Thay doi mat khau", true);
-        print("4. Vi diem", true);  // <-- Mục mới
+        print("4. Vi diem", true);
         print("0. Dang xuat", true);
 
         std::string choiceStr = input("Lua chon: ");
@@ -30,20 +32,22 @@ void showUserMenu(User currentUser) {
             case 2: {
                 std::string newName = input("Nhap ten hien thi moi: ");
                 currentUser.setDisplayName(newName);
+                UserFileHelper::saveUpdatedUser(currentUser); // lưu cập nhật tên
                 print("Da cap nhat ten hien thi!", true);
                 break;
             }
             case 3: {
                 std::string newPass = input("Nhap mat khau moi: ");
                 currentUser.setPassword(newPass);
+                UserFileHelper::saveUpdatedUser(currentUser); // lưu cập nhật mật khẩu + backup
                 print("Da cap nhat mat khau!", true);
                 break;
             }
-            case 4: {
+            case 4:
                 showWalletMenu(currentUser);
                 break;
-            }
             case 0:
+                UserFileHelper::saveUpdatedUser(currentUser); // backup trước khi đăng xuất
                 print("Dang xuat thanh cong!", true);
                 return;
             default:

@@ -70,20 +70,32 @@ std::string UserFileHelper::getCurrentDate() {
     return std::string(buffer);
 }
 
+std::string UserFileHelper::getCurrentDateTime() {
+    time_t now = time(nullptr);
+    tm t = {};
+    localtime_s(&t, &now);
+
+    char buffer[20];
+    strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", &t);
+    return std::string(buffer);
+}
 
 void UserFileHelper::backupOldFileIfExists(const std::string& path) {
     if (!fs::exists(path)) return;
 
     std::string date = getCurrentDate();
-    std::string backupDir = "./backup/" + date;
+    std::string dateTime = getCurrentDateTime();
 
+    std::string backupDir = "./backup/" + date;
     if (!fs::exists(backupDir)) {
         fs::create_directories(backupDir);
     }
 
-    std::string fileName = fs::path(path).filename().string();
-    std::string backupPath = backupDir + "/" + fileName;
-    fs::rename(path, backupPath);
+    std::string fileName = fs::path(path).stem().string(); // tên không có đuôi
+    std::string extension = fs::path(path).extension().string();
+    std::string backupPath = backupDir + "/" + fileName + "_" + dateTime + extension;
+
+    fs::copy(path, backupPath, fs::copy_options::overwrite_existing);
 }
 
 bool UserFileHelper::saveNewUser(const User& user) {
@@ -106,7 +118,7 @@ bool UserFileHelper::saveNewWallet(const Wallet& wallet) {
     json j;
     j["walletId"] = wallet.getWalletId();
     j["points"] = wallet.getPoints();
-    j["transactionIds"] = wallet.getTransactionIds();  // ✅ ghi thêm lịch sử
+    j["transactionIds"] = wallet.getTransactionIds();
 
     std::string fileName = wallet.getWalletId() + ".json";
     std::string path = buildPath(fileName, FileCategory::Wallet);
@@ -124,9 +136,27 @@ bool UserFileHelper::saveTransactionLog(const Transaction& tx) {
     j["amount"] = tx.getAmount();
     j["timestamp"] = tx.getTimestamp();
 
-    std::string fileName = tx.getTransactionId() + ".json";  // ✅ ID duy nhất
+    std::string fileName = tx.getTransactionId() + ".json";
     return writeStringToFile(fileName, j.dump(4), FileCategory::TransactionLog);
 }
+
+bool UserFileHelper::saveUpdatedUser(const User& user) {
+    return saveNewUser(user);
+}
+
+bool UserFileHelper::saveUpdatedWallet(const Wallet& wallet) {
+    json j;
+    j["walletId"] = wallet.getWalletId();
+    j["points"] = wallet.getPoints();
+    j["transactionIds"] = wallet.getTransactionIds();
+
+    std::string fileName = wallet.getWalletId() + ".json";
+    std::string path = buildPath(fileName, FileCategory::Wallet);
+    backupOldFileIfExists(path);
+
+    return writeStringToFile(fileName, j.dump(4), FileCategory::Wallet);
+}
+
 
 std::vector<std::string> UserFileHelper::listFilesInCategory(FileCategory category) {
     std::vector<std::string> files;
@@ -138,11 +168,4 @@ std::vector<std::string> UserFileHelper::listFilesInCategory(FileCategory catego
         }
     }
     return files;
-}
-std::string sanitizeFilename(const std::string& raw) {
-    std::string safe;
-    for (char c : raw) {
-        if (isalnum(c) || c == '-' || c == '_') safe += c;
-    }
-    return safe;
 }

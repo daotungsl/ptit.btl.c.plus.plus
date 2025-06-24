@@ -32,7 +32,7 @@ void registerNewUser() {
 
     // Nhập và kiểm tra username
     do {
-        username = input("Nhap ten dang nhap: ");
+        username = input("Tao ten dang nhap: ");
         if (username.empty()) {
             print("Username khong duoc de trong.", true);
             continue;
