@@ -62,11 +62,14 @@ std::string UserFileHelper::buildPath(const std::string& fileName, FileCategory 
 
 std::string UserFileHelper::getCurrentDate() {
     time_t now = time(nullptr);
-    tm* t = localtime(&now);
+    tm t = {};
+    localtime_s(&t, &now);
+
     char buffer[11];
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d", t);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d", &t);
     return std::string(buffer);
 }
+
 
 void UserFileHelper::backupOldFileIfExists(const std::string& path) {
     if (!fs::exists(path)) return;
@@ -103,6 +106,7 @@ bool UserFileHelper::saveNewWallet(const Wallet& wallet) {
     json j;
     j["walletId"] = wallet.getWalletId();
     j["points"] = wallet.getPoints();
+    j["transactionIds"] = wallet.getTransactionIds();  // ✅ ghi thêm lịch sử
 
     std::string fileName = wallet.getWalletId() + ".json";
     std::string path = buildPath(fileName, FileCategory::Wallet);
@@ -113,24 +117,32 @@ bool UserFileHelper::saveNewWallet(const Wallet& wallet) {
 
 bool UserFileHelper::saveTransactionLog(const Transaction& tx) {
     json j;
+    j["transactionId"] = tx.getTransactionId();
     j["type"] = static_cast<int>(tx.getType());
     j["from"] = tx.getFromWalletId();
     j["to"] = tx.getToWalletId();
     j["amount"] = tx.getAmount();
-    j["timestamp"] = tx.getTimestamp(); // cần có getter timestamp
+    j["timestamp"] = tx.getTimestamp();
 
-    std::string fileName = "tx_" + std::to_string(std::time(nullptr)) + ".json";
+    std::string fileName = tx.getTransactionId() + ".json";  // ✅ ID duy nhất
     return writeStringToFile(fileName, j.dump(4), FileCategory::TransactionLog);
 }
+
 std::vector<std::string> UserFileHelper::listFilesInCategory(FileCategory category) {
     std::vector<std::string> files;
-    std::string baseDir = buildPath("", category);  // trả về thư mục gốc
+    std::string baseDir = buildPath("", category);
 
     for (const auto& entry : fs::directory_iterator(baseDir)) {
         if (entry.path().extension() == ".json") {
-            files.push_back(entry.path().filename().string()); // chỉ tên file
+            files.push_back(entry.path().filename().string());
         }
     }
     return files;
 }
-
+std::string sanitizeFilename(const std::string& raw) {
+    std::string safe;
+    for (char c : raw) {
+        if (isalnum(c) || c == '-' || c == '_') safe += c;
+    }
+    return safe;
+}

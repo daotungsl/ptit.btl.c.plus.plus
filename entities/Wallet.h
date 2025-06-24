@@ -4,13 +4,14 @@
 #include <string>
 #include <random>
 #include <sstream>
+#include <vector>
 
 class Wallet {
 private:
-    std::string walletId;  // Mã định danh duy nhất
+    std::string walletId;
     int points;
+    std::vector<std::string> transactionIds;
 
-    // Tạo mã ID ngẫu nhiên (8 ký tự hex)
     static std::string generateUniqueId() {
         std::stringstream ss;
         std::random_device rd;
@@ -23,17 +24,16 @@ private:
     }
 
 public:
-    // Constructor mặc định
     Wallet() : walletId(generateUniqueId()), points(0) {}
 
-    // Getter
     std::string getWalletId() const { return walletId; }
     int getPoints() const { return points; }
+    const std::vector<std::string>& getTransactionIds() const { return transactionIds; }
 
-    // Setter
     void setPoints(int newPoints) { points = newPoints; }
+    void addTransactionId(const std::string& txId) { transactionIds.push_back(txId); }
+    void setTransactionIds(const std::vector<std::string>& ids) { transactionIds = ids; }
 
-    // Nạp/trừ điểm
     void addPoints(int amount) { points += amount; }
     bool deductPoints(int amount) {
         if (amount > points) return false;
