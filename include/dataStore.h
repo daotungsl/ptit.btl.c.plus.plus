@@ -16,6 +16,8 @@ namespace DataStore {
     const std::vector<Transaction>& getAllTransactions();
     const std::vector<User>& getAllUsers();
 
+    void loadAllData();
+
     Wallet* getWalletById(const std::string& id);
     User* getUserByPhone(const std::string& phone);
 }

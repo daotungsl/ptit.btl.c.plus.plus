@@ -93,11 +93,11 @@ bool transferPointsBetweenWallets(const std::string& fromId, const std::string& 
     Wallet* to = getWalletById(toId);
 
     if (!from) {
-        std::cout << "Không tìm thấy ví nguồn.\n";
+        std::cout << "Khong tim thay vi nguon.\n";
         return false;
     }
     if (!to) {
-        std::cout << "Không tìm thấy ví đích.\n";
+        std::cout << "Khong tim thay vi dich.\n";
         return false;
     }
 
@@ -115,18 +115,37 @@ bool transferPointsBetweenWallets(const std::string& fromId, const std::string& 
 
         Transaction tx(TransactionType::Transfer, fromId, toId, amount);
         recordTransaction(tx);
-        std::cout << "Giao dịch chuyển " << amount << " điểm thành công.\n";
+        std::cout << "Giao dich chuyen " << amount << " diem thanh cong.\n";
         return true;
 
     } catch (const std::exception& e) {
         from->setPoints(originalFrom);
         to->setPoints(originalTo);
-        std::cerr << "Giao dịch thất bại: " << e.what() << ". Đã khôi phục trạng thái.\n";
+        std::cerr << "Giao dich that bai " << e.what() << ". Da khoi phuc trang thai.\n";
         return false;
     } catch (...) {
         from->setPoints(originalFrom);
         to->setPoints(originalTo);
-        std::cerr << "Giao dịch thất bại do lỗi không xác định. Đã khôi phục trạng thái.\n";
+        std::cerr << "Giao dich that bai do loi khong xac dinh. Da khoi phuc trang thai.\n";
         return false;
     }
 }
+void showTransactionHistory(User& user) {
+    std::string walletId = user.getWalletId();
+    const auto& transactions = getAllTransactions();
+
+    print("\n===== LICH SU GIAO DICH =====", true);
+
+    bool found = false;
+    for (const auto& tx : transactions) {
+        if (tx.getFromWalletId() == walletId || tx.getToWalletId() == walletId) {
+            print(tx.toString(), true);
+            found = true;
+        }
+    }
+
+    if (!found) {
+        print("Khong co giao dich nao lien quan toi vi cua ban.", true);
+    }
+}
+
