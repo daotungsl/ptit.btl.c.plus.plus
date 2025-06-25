@@ -1,3 +1,4 @@
+// transaction.cpp - chuẩn hoá chỉ làm việc trên ví từ cache
 #include "../entities/Transaction.h"
 #include "../include/UserFileHelper.h"
 #include "../include/DataStore.h"
@@ -48,12 +49,12 @@ void recordTransaction(const Transaction& tx) {
 
     if (from) {
         from->addTransactionId(tx.getTransactionId());
-        UserFileHelper::saveNewWallet(*from);
+        UserFileHelper::saveUpdatedWallet(*from); // ✅ chỉ cập nhật RAM → file
     }
 
     if (to) {
         to->addTransactionId(tx.getTransactionId());
-        UserFileHelper::saveNewWallet(*to);
+        UserFileHelper::saveUpdatedWallet(*to); // ✅ chỉ cập nhật RAM → file
     }
 
     UserFileHelper::saveTransactionLog(tx);

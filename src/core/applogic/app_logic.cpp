@@ -4,6 +4,7 @@
 #include "../../core/menu/user_menu.h"
 #include "../../core/auth/auth.h"
 #include "../include/DataStore.h"
+#include "../include/seedData.h"
 
 using namespace std;
 using namespace DataStore;
@@ -17,6 +18,7 @@ void runApplication() {
 
 			print("1. Login", true);
 			print("2. Register", true);
+			print("3. Insert seed data", true);
 			print("0. Exit", true);
 
 			string choiceStr = input("Choice number: ");
@@ -36,6 +38,10 @@ void runApplication() {
 					handleRegister(); 
 					pause();
 					break;
+				case 3:
+                    insertSeedData();
+                    pause();
+                    break;
 				case 0:
 					print("Goodbye!", true);
 					break;

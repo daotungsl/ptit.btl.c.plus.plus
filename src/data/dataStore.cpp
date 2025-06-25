@@ -35,6 +35,30 @@ namespace DataStore {
         return nullptr;
     }
 
+     bool syncWallet(const std::string& walletId) {
+        auto it = allWallets.find(walletId);
+        if (it == allWallets.end()) return false;
+        return UserFileHelper::saveUpdatedWallet(it->second);
+    }
+
+    bool syncUser(const std::string& username) {
+        for (const auto& user : allUsers) {
+            if (user.getUsername() == username) {
+                return UserFileHelper::saveUpdatedUser(user);
+            }
+        }
+        return false;
+    }
+
+    void syncAll() {
+        for (const auto& [id, wallet] : allWallets) {
+            UserFileHelper::saveUpdatedWallet(wallet);
+        }
+        for (const auto& user : allUsers) {
+            UserFileHelper::saveUpdatedUser(user);
+        }
+    }
+    
     void loadAllUsers() {
         allUsers.clear();
         auto filenames = UserFileHelper::listFilesInCategory(FileCategory::User);

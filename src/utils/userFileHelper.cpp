@@ -141,7 +141,19 @@ bool UserFileHelper::saveTransactionLog(const Transaction& tx) {
 }
 
 bool UserFileHelper::saveUpdatedUser(const User& user) {
-    return saveNewUser(user);
+    json j;
+    j["username"] = user.getUsername();
+    j["password"] = user.getPassword();
+    j["displayName"] = user.getDisplayName();
+    j["walletId"] = user.getWalletId();
+    j["phoneNumber"] = user.getPhoneNumber();
+    j["role"] = static_cast<int>(user.getRole());
+
+    std::string fileName = user.getUsername() + ".json";
+    std::string path = buildPath(fileName, FileCategory::User);
+    backupOldFileIfExists(path);
+
+    return writeStringToFile(fileName, j.dump(4), FileCategory::User);
 }
 
 bool UserFileHelper::saveUpdatedWallet(const Wallet& wallet) {
@@ -156,6 +168,7 @@ bool UserFileHelper::saveUpdatedWallet(const Wallet& wallet) {
 
     return writeStringToFile(fileName, j.dump(4), FileCategory::Wallet);
 }
+
 
 
 std::vector<std::string> UserFileHelper::listFilesInCategory(FileCategory category) {

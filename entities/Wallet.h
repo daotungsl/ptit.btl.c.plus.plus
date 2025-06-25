@@ -24,7 +24,12 @@ private:
     }
 
 public:
+    // ✅ Constructor mặc định – dùng khi tạo ví mới
     Wallet() : walletId(generateUniqueId()), points(0) {}
+
+    // ✅ Constructor mở rộng – dùng khi khôi phục ví từ dữ liệu cũ
+    Wallet(const std::string& id, int pts = 0, const std::vector<std::string>& txIds = {})
+        : walletId(id), points(pts), transactionIds(txIds) {}
 
     std::string getWalletId() const { return walletId; }
     int getPoints() const { return points; }

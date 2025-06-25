@@ -20,6 +20,11 @@ namespace DataStore {
 
     Wallet* getWalletById(const std::string& id);
     User* getUserByPhone(const std::string& phone);
+
+    // ✅ Thêm các hàm đồng bộ
+    bool syncWallet(const std::string& walletId);
+    bool syncUser(const std::string& username);
+    void syncAll();
 }
 
 #endif // DATASTORE_H
