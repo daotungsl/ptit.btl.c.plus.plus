@@ -2,18 +2,68 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build with MSVC (cl.exe)",
+      "label": "Build Debug",
       "type": "shell",
       "command": "cl.exe",
       "args": [
         "/std:c++17",
         "/EHsc",
-        "main.cpp",          // 👈 thay bằng tên file chính của bạn
-        "/Fe:main_msvc.exe"
+        "/MDd",
+        "/Ilib",                         
+        "main.cpp",
+        "userFileHelper.cpp",
+        "hash.cpp",
+        "seedData.cpp",
+        "dataStore.cpp",
+        "walletService.cpp",
+        "transaction.cpp",
+        "otp.cpp",
+        "user_menu.cpp",
+        "manager_menu.cpp",
+        "register.cpp",
+        "login.cpp",
+        "auth.cpp",
+        "app_logic.cpp",
+        "/Fe:reward_wallet_debug.exe"
       ],
-      "group": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
       "problemMatcher": [],
-      "detail": "Build using Microsoft cl.exe"
+      "detail": "Build in Debug mode using MSVC"
+    },
+    {
+      "label": "Build Release",
+      "type": "shell",
+      "command": "cl.exe",
+      "args": [
+        "/std:c++17",
+        "/EHsc",
+        "/MD",
+        "/Ilib",
+        "main.cpp",
+        "userFileHelper.cpp",
+        "hash.cpp",
+        "seedData.cpp",
+        "dataStore.cpp",
+        "walletService.cpp",
+        "transaction.cpp",
+        "otp.cpp",
+        "user_menu.cpp",
+        "manager_menu.cpp",
+        "register.cpp",
+        "login.cpp",
+        "auth.cpp",
+        "app_logic.cpp",
+        "/Fe:reward_wallet.exe"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "detail": "Build in Release mode using MSVC"
     }
   ]
 }
