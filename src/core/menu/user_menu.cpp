@@ -1,8 +1,8 @@
-// user_menu.cpp - cập nhật để backup khi đổi mật khẩu và đăng xuất
+// user_menu.cpp - cập nhật dùng DataStore::syncUser thay vì gọi UserFileHelper trực tiếp
 #include "../include/factory.h"
 #include "../entities/User.h"
 #include "../include/walletService.h"
-#include "../include/UserFileHelper.h"
+#include "../include/DataStore.h"
 
 void showUserMenu(User currentUser) {
     int choice = -1;
@@ -32,14 +32,14 @@ void showUserMenu(User currentUser) {
             case 2: {
                 std::string newName = input("Nhap ten hien thi moi: ");
                 currentUser.setDisplayName(newName);
-                UserFileHelper::saveUpdatedUser(currentUser); // lưu cập nhật tên
+                DataStore::syncUser(currentUser.getUsername()); // ✅ đồng bộ user sau thay đổi tên
                 print("Da cap nhat ten hien thi!", true);
                 break;
             }
             case 3: {
                 std::string newPass = input("Nhap mat khau moi: ");
                 currentUser.setPassword(newPass);
-                UserFileHelper::saveUpdatedUser(currentUser); // lưu cập nhật mật khẩu + backup
+                DataStore::syncUser(currentUser.getUsername()); // ✅ đồng bộ user sau đổi mật khẩu
                 print("Da cap nhat mat khau!", true);
                 break;
             }
@@ -47,7 +47,7 @@ void showUserMenu(User currentUser) {
                 showWalletMenu(currentUser);
                 break;
             case 0:
-                UserFileHelper::saveUpdatedUser(currentUser); // backup trước khi đăng xuất
+                DataStore::syncUser(currentUser.getUsername()); // ✅ backup user trước khi đăng xuất
                 print("Dang xuat thanh cong!", true);
                 return;
             default:

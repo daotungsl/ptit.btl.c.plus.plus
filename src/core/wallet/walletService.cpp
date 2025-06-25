@@ -1,4 +1,3 @@
-// walletService.cpp - chuẩn hóa chỉ xử lý trên cache (RAM), không tạo Wallet mới
 #include "../include/walletService.h"
 #include "../entities/Wallet.h"
 #include "../entities/Transaction.h"
@@ -107,13 +106,13 @@ bool transferPointsBetweenWallets(const std::string& fromId, const std::string& 
     to->addPoints(amount);
 
     Transaction tx(TransactionType::Transfer, fromId, toId, amount);
-    UserFileHelper::saveTransactionLog(tx);
+    UserFileHelper::saveTransactionLog(tx);  // log vẫn dùng trực tiếp
 
     from->addTransactionId(tx.getTransactionId());
     to->addTransactionId(tx.getTransactionId());
 
-    UserFileHelper::saveUpdatedWallet(*from);
-    UserFileHelper::saveUpdatedWallet(*to);
+    DataStore::syncWallet(from->getWalletId());  // ✅ gọi qua DataStore
+    DataStore::syncWallet(to->getWalletId());
 
     std::cout << "Chuyen " << amount << " diem thanh cong!\n";
     return true;
