@@ -85,17 +85,20 @@ namespace DataStore {
             std::string content = UserFileHelper::readStringFromFile(file, FileCategory::Wallet);
             if (!content.empty()) {
                 json j = json::parse(content);
-                Wallet w;
-                w.setPoints(j.value("points", 0));
+
                 std::string walletId = j.value("walletId", "");
+                int points = j.value("points", 0);
+                std::vector<std::string> txIds = j.value("transactionIds", std::vector<std::string>{});
+
                 if (!walletId.empty()) {
-                    // ép set ID nếu Wallet không có setter riêng
+                    Wallet w(walletId, points, txIds);
                     allWallets[walletId] = w;
-                    allWallets[walletId].setPoints(j.value("points", 0));
                 }
             }
         }
     }
+
+
 
     void loadAllTransactions() {
         allTransactions.clear();
@@ -109,9 +112,12 @@ namespace DataStore {
                 std::string to = j.value("to", "");
                 int amount = j.value("amount", 0);
                 std::time_t timestamp = j.value("timestamp", std::time(nullptr));
+                std::string txId = j.value("transactionId", "");
 
                 Transaction tx(type, from, to, amount);
-                tx.setTimestamp(timestamp);  // cần thêm setter nếu timestamp không có trong constructor
+                tx.setTimestamp(timestamp);
+                tx.setTransactionId(txId);  // ✅ FIX: đảm bảo ID không bị sinh lại
+
                 allTransactions.push_back(tx);
             }
         }

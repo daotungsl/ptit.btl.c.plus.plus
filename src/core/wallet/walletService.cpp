@@ -120,6 +120,7 @@ bool transferPointsBetweenWallets(const std::string& fromId, const std::string& 
 
 void showTransactionHistory(User& user) {
     std::string walletId = user.getWalletId();
+    DataStore::loadAllTransactions();
     const auto& transactions = getAllTransactions();
 
     print("\n===== LICH SU GIAO DICH =====", true);

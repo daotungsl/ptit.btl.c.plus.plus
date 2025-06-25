@@ -36,11 +36,26 @@ std::string Transaction::toString() const {
 
     std::string typeStr = (type == TransactionType::Deposit) ? "DEPOSIT" : "TRANSFER";
 
+    // 🔎 Tìm người gửi
+    std::string senderInfo = fromWalletId;
+    std::string receiverInfo = toWalletId;
+    const auto& users = DataStore::getAllUsers();
+    for (const auto& user : users) {
+        if (user.getWalletId() == fromWalletId) {
+            senderInfo = user.getPhoneNumber() + " (" + user.getDisplayName() + ")";
+        }
+        if (user.getWalletId() == toWalletId) {
+            receiverInfo = user.getPhoneNumber() + " (" + user.getDisplayName() + ")";
+        }
+    }
+
     return "[" + std::string(buffer) + "] " + typeStr +
-           " | From: " + fromWalletId +
-           " → To: " + toWalletId +
+           " | TxID: " + transactionId +
+           " | From: " + senderInfo +
+           " To: " + receiverInfo +
            " | Amount: " + std::to_string(amount);
 }
+
 
 void recordTransaction(const Transaction& tx) {
     Wallet* from = DataStore::getWalletById(tx.getFromWalletId());
