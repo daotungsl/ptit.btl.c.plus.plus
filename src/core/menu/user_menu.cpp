@@ -3,8 +3,9 @@
 #include "../entities/User.h"
 #include "../include/walletService.h"
 #include "../include/DataStore.h"
+#include "../include/otp.h"
 
-void showUserMenu(User currentUser) {
+void showUserMenu(User& currentUser) {
     int choice = -1;
 
     do {
@@ -38,6 +39,10 @@ void showUserMenu(User currentUser) {
             }
             case 3: {
                 std::string newPass = input("Nhap mat khau moi: ");
+                if (!OtpManager::confirmOtpForAction(currentUser.getPhoneNumber())) {
+                print("Xac thuc OTP that bai.", true);
+                break;
+                }
                 currentUser.setPassword(newPass);
                 DataStore::syncUser(currentUser.getUsername()); // ✅ đồng bộ user sau đổi mật khẩu
                 print("Da cap nhat mat khau!", true);

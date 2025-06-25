@@ -16,7 +16,7 @@ private:
     std::string password;
     UserRole role;
     std::string walletId;
-    std::string phoneNumber; // << THÊM DÒNG NÀY
+    std::string phoneNumber; 
 
 public:
     // Constructor đầy đủ
@@ -24,7 +24,7 @@ public:
          UserRole role = UserRole::Failed,
          const std::string& displayName = "",
          const std::string& walletId = "",
-         const std::string& phoneNumber = "") // << THÊM DÒNG NÀY
+         const std::string& phoneNumber = "") 
         : username(username), displayName(displayName), password(password),
           role(role), walletId(walletId), phoneNumber(phoneNumber) {}
 
@@ -37,7 +37,7 @@ public:
     std::string getPassword() const { return password; }
     UserRole getRole() const { return role; }
     std::string getWalletId() const { return walletId; }
-    std::string getPhoneNumber() const { return phoneNumber; } // << THÊM
+    std::string getPhoneNumber() const { return phoneNumber; }
 
     // Setter
     void setUsername(const std::string& newUsername) { username = newUsername; }
@@ -45,7 +45,7 @@ public:
     void setPassword(const std::string& newPassword) { password = newPassword; }
     void setRole(UserRole newRole) { role = newRole; }
     void setWalletId(const std::string& newWalletId) { walletId = newWalletId; }
-    void setPhoneNumber(const std::string& newPhone) { phoneNumber = newPhone; } // << THÊM
+    void setPhoneNumber(const std::string& newPhone) { phoneNumber = newPhone; }
 
     // Kiểm tra vai trò
     bool isManager() const { return role == UserRole::Manager; }

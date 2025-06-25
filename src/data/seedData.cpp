@@ -2,6 +2,7 @@
 #include "../entities/Wallet.h"
 #include "../include/UserFileHelper.h"
 #include "../include/hash.h"
+#include "../include/factory.h"
 #include <iostream>
 
 void insertSeedData() {
@@ -34,7 +35,10 @@ void insertSeedData() {
     bool ok6 = UserFileHelper::saveNewWallet(wallet3);
 
     if (ok1 && ok2 && ok3 && ok4 && ok5 && ok6) {
-        std::cout << "\n\n==> Seed data thanh cong!\n";
+        print("==> Seed data thanh cong!", true);
+        print("User1: " + username1 + " | Pass: 123 " + " | Phone: " + phone1 + " | Role: Manager", true);
+        print("User2: " + username2 + " | Pass: 123 " + " | Phone: " + phone2 + " | Role: User", true);
+        print("User3: " + username3 + " | Pass: 123 " + " | Phone: " + phone3 + " | Role: User", true);
     } else {
         std::cerr << "\n\n==> Seed data that bai.\n";
     }

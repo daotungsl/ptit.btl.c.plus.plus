@@ -5,6 +5,7 @@
 #include "../include/factory.h"
 #include "../include/DataStore.h"
 #include "../include/UserFileHelper.h"
+#include "../include/otp.h"
 #include <iostream>
 #include <unordered_map>
 #include <stdexcept>
@@ -79,6 +80,11 @@ void transferPointsUI(User& user) {
                                 " diem cho " + receiverUser->getUsername() + "? (y/n): ");
     if (confirm != "y" && confirm != "Y") {
         print("Huy giao dich.", true);
+        return;
+    }
+
+    if (!OtpManager::confirmOtpForAction(user.getPhoneNumber())) {
+        print("❌ Xac thuc OTP that bai. Huy giao dich.", true);
         return;
     }
 

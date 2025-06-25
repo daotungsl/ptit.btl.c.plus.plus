@@ -1,4 +1,5 @@
 #include "otp.h"
+#include "../include/factory.h"
 #include <random>
 #include <ctime>
 
@@ -11,6 +12,20 @@ std::string random4Digits() {
 }
 
 namespace OtpManager {
+
+    bool confirmOtpForAction(const std::string& phone) {
+        std::string otp = generateOtp(phone);
+        print("OTP da duoc gui toi so: " + phone, true);
+        print("OTP cua ban la: " + otp, true);
+
+        std::string userOtp = input("Nhap ma OTP de xac nhan thao tac: ");
+        if (!verifyOtp(phone, userOtp)) {
+            print("OTP khong dung hoac het han.", true);
+            return false;
+        }
+        return true;
+    }
+
     std::string generateOtp(const std::string& phone) {
         std::string otp = random4Digits();
         otpStorage[phone] = {otp, std::time(nullptr)};

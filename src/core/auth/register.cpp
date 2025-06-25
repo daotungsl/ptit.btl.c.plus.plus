@@ -27,7 +27,7 @@ bool phoneExists(const std::string& phone) {
     return false;
 }
 
-void registerNewUser() {
+void registerNewUser(bool calledByAdmin)  {
     std::string username;
     std::string phone;
 
@@ -67,6 +67,11 @@ void registerNewUser() {
     if (okUser && okWallet) {
         allUsers.push_back(newUser);
         allWallets[walletId] = wallet;
+
+        if (calledByAdmin) {
+            // bạn có thể log lại người tạo là admin nếu cần
+            print("Tai khoan nay duoc tao boi quan ly.", true);
+        }
 
         print("Dang ky thanh cong! Tro ve man hinh truoc.", true);
     } else {
