@@ -5,6 +5,7 @@
 #include "../include/UserFileHelper.h"
 #include "../include/DataStore.h"
 #include "../lib/nlohmann/json.hpp"
+#include "../include/hash.h" // ✅ THÊM DÒNG NÀY
 #include <iostream>
 #include <filesystem>
 #include <vector>
@@ -30,7 +31,6 @@ void registerNewUser() {
     std::string username;
     std::string phone;
 
-    // Nhập và kiểm tra username
     do {
         username = input("Tao ten dang nhap: ");
         if (username.empty()) {
@@ -42,7 +42,6 @@ void registerNewUser() {
         } else break;
     } while (true);
 
-    // Nhập và kiểm tra số điện thoại
     do {
         phone = input("Nhap so dien thoai: ");
         if (phone.empty()) {
@@ -54,21 +53,18 @@ void registerNewUser() {
         } else break;
     } while (true);
 
-    std::string password = input("Nhap mat khau (hoac de trong): ");
+    std::string rawPassword = input("Nhap mat khau (hoac de trong): ");
+    std::string hashedPassword = PasswordUtils::hashPassword(rawPassword); // ✅ hash
 
-    // Tạo ví mới
     Wallet wallet;
     std::string walletId = wallet.getWalletId();
 
-    // Tạo user mới
-    User newUser(username, password, UserRole::User, username, walletId, phone);
+    User newUser(username, hashedPassword, UserRole::User, username, walletId, phone);
 
-    // Ghi ra file
     bool okUser = UserFileHelper::saveNewUser(newUser);
     bool okWallet = UserFileHelper::saveNewWallet(wallet);
 
     if (okUser && okWallet) {
-        // Ghi vào bộ nhớ tạm (DataStore)
         allUsers.push_back(newUser);
         allWallets[walletId] = wallet;
 
