@@ -10,6 +10,7 @@ include_directories(
     include
     entities
     lib/sha
+    lib 
 )
 
 # Tìm toàn bộ file .cpp trong src và các thư mục con
