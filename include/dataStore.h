@@ -26,7 +26,7 @@ namespace DataStore {
 
     // ✅ Thêm các hàm đồng bộ
     bool syncWallet(const std::string& walletId);
-    bool syncUser(const std::string& username);
+    bool syncUser(const User& updatedUser);
     void syncAll();
 }
 

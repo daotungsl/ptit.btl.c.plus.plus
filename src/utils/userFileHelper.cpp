@@ -106,6 +106,7 @@ bool UserFileHelper::saveNewUser(const User& user) {
     j["walletId"] = user.getWalletId();
     j["phoneNumber"] = user.getPhoneNumber();
     j["role"] = static_cast<int>(user.getRole());
+    j["isAutoPassword"] = user.getIsAutoPassword();
 
     std::string fileName = user.getUsername() + ".json";
     std::string path = buildPath(fileName, FileCategory::User);

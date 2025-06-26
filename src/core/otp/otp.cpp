@@ -1,15 +1,11 @@
 #include "otp.h"
 #include "../include/factory.h"
-#include <random>
+
 #include <ctime>
 
 static std::unordered_map<std::string, std::pair<std::string, std::time_t>> otpStorage;
 
-std::string random4Digits() {
-    std::mt19937 gen(std::random_device{}());
-    std::uniform_int_distribution<> dis(1000, 9999);
-    return std::to_string(dis(gen));
-}
+
 
 namespace OtpManager {
 

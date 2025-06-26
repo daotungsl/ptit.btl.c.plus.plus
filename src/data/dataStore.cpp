@@ -41,14 +41,18 @@ namespace DataStore {
         return UserFileHelper::saveUpdatedWallet(it->second);
     }
 
-    bool syncUser(const std::string& username) {
-        for (const auto& user : allUsers) {
-            if (user.getUsername() == username) {
-                return UserFileHelper::saveUpdatedUser(user);
-            }
+bool syncUser(const User& updatedUser) {
+    // Cập nhật user tương ứng trong allUsers
+    for (auto& user : allUsers) {
+        if (user.getUsername() == updatedUser.getUsername()) {
+            user = updatedUser; // ✅ Ghi đè user trong allUsers
+            break;
         }
-        return false;
     }
+
+    // Ghi file
+    return UserFileHelper::saveUpdatedUser(updatedUser);
+}
 
     void syncAll() {
         for (const auto& [id, wallet] : allWallets) {

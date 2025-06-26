@@ -4,6 +4,7 @@
 #include "../include/walletService.h"
 #include "../include/DataStore.h"
 #include "../include/otp.h"
+#include "../include/hash.h"
 
 void showUserMenu(User& currentUser) {
     int choice = -1;
@@ -33,7 +34,7 @@ void showUserMenu(User& currentUser) {
             case 2: {
                 std::string newName = input("Nhap ten hien thi moi: ");
                 currentUser.setDisplayName(newName);
-                DataStore::syncUser(currentUser.getUsername()); // ✅ đồng bộ user sau thay đổi tên
+                DataStore::syncUser(currentUser); // ✅ đồng bộ user sau thay đổi tên
                 print("Da cap nhat ten hien thi!", true);
                 break;
             }
@@ -44,7 +45,7 @@ void showUserMenu(User& currentUser) {
                 break;
                 }
                 currentUser.setPassword(newPass);
-                DataStore::syncUser(currentUser.getUsername()); // ✅ đồng bộ user sau đổi mật khẩu
+                DataStore::syncUser(currentUser); // ✅ đồng bộ user sau đổi mật khẩu
                 print("Da cap nhat mat khau!", true);
                 break;
             }
@@ -52,7 +53,7 @@ void showUserMenu(User& currentUser) {
                 showWalletMenu(currentUser);
                 break;
             case 0:
-                DataStore::syncUser(currentUser.getUsername()); // ✅ backup user trước khi đăng xuất
+                DataStore::syncUser(currentUser); // ✅ backup user trước khi đăng xuất
                 print("Dang xuat thanh cong!", true);
                 return;
             default:

@@ -5,7 +5,7 @@
 #include "../include/UserFileHelper.h"
 #include "../include/DataStore.h"
 #include "../lib/nlohmann/json.hpp"
-#include "../include/hash.h" // ✅ THÊM DÒNG NÀY
+
 #include <iostream>
 #include <filesystem>
 #include <vector>
@@ -30,6 +30,8 @@ bool phoneExists(const std::string& phone) {
 void registerNewUser(bool calledByAdmin)  {
     std::string username;
     std::string phone;
+    std::string rawPassword;
+    bool isAutoPass;
 
     do {
         username = input("Tao ten dang nhap: ");
@@ -53,13 +55,23 @@ void registerNewUser(bool calledByAdmin)  {
         } else break;
     } while (true);
 
-    std::string rawPassword = input("Nhap mat khau (hoac de trong): ");
-    std::string hashedPassword = PasswordUtils::hashPassword(rawPassword); // ✅ hash
+    if (!calledByAdmin)
+    {
+            rawPassword = input("Nhap mat khau (hoac de trong): ");
+    }
+
+    if (rawPassword.empty())
+    {
+        rawPassword = random4Digits();
+        isAutoPass = true;
+    }
+    
+    std::string hashedPassword = PasswordUtils::hashPassword(rawPassword);
 
     Wallet wallet;
     std::string walletId = wallet.getWalletId();
 
-    User newUser(username, hashedPassword, UserRole::User, username, walletId, phone);
+    User newUser(username, hashedPassword, UserRole::User, username, walletId, phone, isAutoPass);
 
     bool okUser = UserFileHelper::saveNewUser(newUser);
     bool okWallet = UserFileHelper::saveNewWallet(wallet);
@@ -72,8 +84,8 @@ void registerNewUser(bool calledByAdmin)  {
             // bạn có thể log lại người tạo là admin nếu cần
             print("Tai khoan nay duoc tao boi quan ly.", true);
         }
-
-        print("Dang ky thanh cong! Tro ve man hinh truoc.", true);
+        print("Dang ky thanh cong! Mat khau cua tai khoan (" + username + ") la: " + rawPassword, true);
+        print("Tro ve man hinh truoc.", true);
     } else {
         print("Dang ky that bai.", true);
     }

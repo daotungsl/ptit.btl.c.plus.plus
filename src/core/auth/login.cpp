@@ -3,7 +3,8 @@
 #include "../entities/User.h"
 #include "../include/UserFileHelper.h"
 #include "../lib/nlohmann/json.hpp"
-#include "../include/hash.h" // ✅ THÊM DÒNG NÀY
+#include "../include/hash.h"
+#include "../include/DataStore.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -25,14 +26,35 @@ User login() {
         json j = json::parse(content);
         string storedPassword = j.value("password", "");
 
-        if (PasswordUtils::verifyPassword(password, storedPassword)) { // ✅ so sánh hash
+        if (PasswordUtils::verifyPassword(password, storedPassword)) {
             UserRole role = static_cast<UserRole>(j.value("role", 1));
             string displayName = j.value("displayName", "");
             string walletId = j.value("walletId", "");
             string phone = j.value("phoneNumber", "");
+            bool isAutoPassword = j.value("isAutoPassword", false);
+
+
+            User user(username, storedPassword, role, displayName, walletId, phone, isAutoPassword);
 
             print("Dang nhap thanh cong!", true);
-            return User(username, storedPassword, role, displayName, walletId, phone);
+
+            // Nếu là mật khẩu tự sinh thì yêu cầu đổi
+            if (user.getIsAutoPassword()) {
+                print("Ban dang su dung mat khau tu dong. Vui long doi mat khau ngay bay gio!", true);
+                string newPass;
+                do {
+                    newPass = input("Nhap mat khau moi: ");
+                } while (newPass.empty());
+
+                // Cập nhật mật khẩu mới và gán isAutoPassword = false
+                user.setPassword(newPass);
+                user.setIsAutoPassword(false);
+                DataStore::syncUser(user);
+
+                print("Mat khau da duoc thay doi thanh cong.", true);
+            }
+
+            return user;
         } else {
             print("Sai mat khau.", true);
             return User(username, password, UserRole::Failed, username);
