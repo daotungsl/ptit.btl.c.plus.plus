@@ -6,6 +6,7 @@
 #include "../include/DataStore.h"
 #include "../include/UserFileHelper.h"
 #include "../include/otp.h"
+#include "../entities/Config.h"
 #include <iostream>
 #include <unordered_map>
 #include <stdexcept>
@@ -97,6 +98,10 @@ void transferPointsUI(User& user) {
 bool transferPointsBetweenWallets(const std::string& fromId, const std::string& toId, int amount) {
     Wallet* from = getWalletById(fromId);
     Wallet* to = getWalletById(toId);
+    if (toId == SYSTEM_WALLET_ID) {
+        std::cerr << "❌ Khong the chuyen diem vao vi tong!\n";
+        return false;
+    }
 
     if (!from || !to) {
         std::cerr << "Khong tim thay vi nguon hoac vi dich.\n";
@@ -140,4 +145,32 @@ void showTransactionHistory(User& user) {
     if (!found) {
         print("Khong co giao dich nao lien quan toi vi cua ban.", true);
     }
+}
+
+bool issuePointsToWallet(const User& adminUser, const std::string& toWalletId, int amount) {
+    if (!adminUser.isManager()) {
+        std::cerr << "❌ Chi Manager moi co quyen cap diem!\n";
+        return false;
+    }
+
+    Wallet* toWallet = getWalletById(toWalletId);
+    Wallet* sysWallet = getWalletById(SYSTEM_WALLET_ID);
+
+    if (!toWallet || !sysWallet) {
+        std::cerr << "Khong tim thay vi dich hoac vi tong.\n";
+        return false;
+    }
+
+    toWallet->addPoints(amount);
+    Transaction tx(TransactionType::Transfer, SYSTEM_WALLET_ID, toWalletId, amount);
+    UserFileHelper::saveTransactionLog(tx);
+
+    toWallet->addTransactionId(tx.getTransactionId());
+    sysWallet->addTransactionId(tx.getTransactionId());
+
+    DataStore::syncWallet(toWalletId);
+    DataStore::syncWallet(SYSTEM_WALLET_ID);
+
+    std::cout << "✅ Da cap " << amount << " diem cho vi " << toWalletId << std::endl;
+    return true;
 }

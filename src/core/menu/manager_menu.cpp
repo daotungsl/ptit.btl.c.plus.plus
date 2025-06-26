@@ -1,4 +1,5 @@
 #include "../include/factory.h"
+#include "../include/sysWalletService.h"
 #include "../entities/User.h"
 #include "../include/DataStore.h"
 #include "../../core/auth/register.h"
@@ -13,6 +14,7 @@ void showManagerMenu(User currentUser) {
         print("2. Tong diem toan he thong", true);
         print("3. Tong so giao dich", true);
         print("4. Tao tai khoan nguoi dung moi", true);
+        print("5. Vi tong", true);
         print("0. Dang xuat", true);
 
         std::string ch = input("Lua chon: ");
@@ -35,6 +37,10 @@ void showManagerMenu(User currentUser) {
                 print("=== TAO TAI KHOAN MOI ===", true);
                 registerNewUser(true); ;
                 break;
+            case 5: {
+                showSystemWalletView(currentUser);
+                break;
+            }
 
             case 0:
                 return;
