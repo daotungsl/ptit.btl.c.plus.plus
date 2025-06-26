@@ -2,6 +2,7 @@
 #include "../entities/User.h"
 #include "../entities/Wallet.h"
 #include "../entities/Transaction.h"
+#include "../entities/Config.h"
 #include "../lib/nlohmann/json.hpp"
 #include <filesystem>
 #include <fstream>
@@ -43,13 +44,13 @@ std::string UserFileHelper::buildPath(const std::string& fileName, FileCategory 
     std::string baseDir;
     switch (category) {
         case FileCategory::User:
-            baseDir = "./data/users";
+            baseDir = USER_DATA_DIR;
             break;
         case FileCategory::Wallet:
-            baseDir = "./data/wallets";
+            baseDir = WALLET_DATA_DIR;
             break;
         case FileCategory::TransactionLog:
-            baseDir = "./data/transactions";
+            baseDir = TRANSACTION_DATA_DIR;
             break;
     }
 
