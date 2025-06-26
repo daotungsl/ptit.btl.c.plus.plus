@@ -7,9 +7,14 @@
 #include <ctime>
 #include <sstream>
 
+
 static std::string generateTransactionId() {
+    using namespace std::chrono;
+    auto now = system_clock::now();
+    auto ms = duration_cast<milliseconds>(now.time_since_epoch()).count();
+
     std::stringstream ss;
-    ss << "tx_" << std::time(nullptr);
+    ss << "tx_" << ms;
     return ss.str();
 }
 

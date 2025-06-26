@@ -42,6 +42,8 @@ void insertSeedData() {
     bool ok5 = UserFileHelper::saveNewWallet(wallet3);
     bool ok6 = UserFileHelper::saveNewWallet(systemWallet);
 
+
+    
     // ✅ Load lại vào RAM
     DataStore::loadAllWallets();
 
@@ -50,30 +52,7 @@ void insertSeedData() {
     Wallet* w2 = getWalletById(wallet2.getWalletId());
     Wallet* w3 = getWalletById(wallet3.getWalletId());
 
-    if (sys && w2 && w3) {
-        if (sys->deductPoints(2000)) {
-            w2->addPoints(2000);
-            recordTransaction(Transaction(TransactionType::Transfer, SYSTEM_WALLET_ID, w2->getWalletId(), 2000));
-            print("Vi tong cap 2000 diem cho " + username2 + " [" + w2->getWalletId() + "]", true);
-        } else {
-            print("Vi tong khong du diem de cap cho " + username2, true);
-        }
-
-        if (sys->deductPoints(1000)) {
-            w3->addPoints(1000);
-            recordTransaction(Transaction(TransactionType::Transfer, SYSTEM_WALLET_ID, w3->getWalletId(), 1000));
-            print("Vi tong cap 1000 diem cho " + username3 + " [" + w3->getWalletId() + "]", true);
-        } else {
-            print("Vi tong khong du diem de cap cho " + username3, true);
-        }
-
-        // Ghi đè ví sau cập nhật điểm
-        UserFileHelper::saveUpdatedWallet(*sys);
-        UserFileHelper::saveUpdatedWallet(*w2);
-        UserFileHelper::saveUpdatedWallet(*w3);
-    }
-
-    // === Thông báo kết quả ===
+        // === Thông báo kết quả ===
     if (ok1 && ok2 && ok3 && ok4 && ok5 && ok6) {
         print("==> Seed data thanh cong!", true);
         print("Admin: " + username1 + " | Pass: 123 | Role: Manager (khong co vi)", true);
@@ -83,4 +62,32 @@ void insertSeedData() {
     } else {
         std::cerr << "\n\n==> Seed data that bai.\n";
     }
+
+    if (sys && w2 && w3) {
+        if (sys->deductPoints(2000)) {
+            w2->addPoints(2000);
+            recordTransaction(Transaction(TransactionType::Deposit, SYSTEM_WALLET_ID, w2->getWalletId(), 2000));
+            print("Vi tong cap 2000 diem cho " + username2 + " [" + w2->getWalletId() + "]", true);
+        } else {
+            print("Vi tong khong du diem de cap cho " + username2, true);
+        }
+
+        if (sys->deductPoints(1000)) {
+            w3->addPoints(1000);
+            recordTransaction(Transaction(TransactionType::Deposit, SYSTEM_WALLET_ID, w3->getWalletId(), 1000));
+            print("Vi tong cap 1000 diem cho " + username3 + " [" + w3->getWalletId() + "]", true);
+        } else {
+            print("Vi tong khong du diem de cap cho " + username3, true);
+        }
+
+        // Ghi đè ví sau cập nhật điểm
+        UserFileHelper::saveUpdatedWallet(*sys);
+        UserFileHelper::saveUpdatedWallet(*w2);
+        UserFileHelper::saveUpdatedWallet(*w3);
+
+        print("User2: " + username2 + " | Pass: 123 | Diem: " + std::to_string(w2->getPoints()), true);
+        print("User3: " + username3 + " | Pass: 123 | Diem: " + std::to_string(w3->getPoints()), true);
+    }
+
+
 }

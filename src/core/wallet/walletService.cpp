@@ -147,30 +147,3 @@ void showTransactionHistory(User& user) {
     }
 }
 
-bool issuePointsToWallet(const User& adminUser, const std::string& toWalletId, int amount) {
-    if (!adminUser.isManager()) {
-        std::cerr << "❌ Chi Manager moi co quyen cap diem!\n";
-        return false;
-    }
-
-    Wallet* toWallet = getWalletById(toWalletId);
-    Wallet* sysWallet = getWalletById(SYSTEM_WALLET_ID);
-
-    if (!toWallet || !sysWallet) {
-        std::cerr << "Khong tim thay vi dich hoac vi tong.\n";
-        return false;
-    }
-
-    toWallet->addPoints(amount);
-    Transaction tx(TransactionType::Transfer, SYSTEM_WALLET_ID, toWalletId, amount);
-    UserFileHelper::saveTransactionLog(tx);
-
-    toWallet->addTransactionId(tx.getTransactionId());
-    sysWallet->addTransactionId(tx.getTransactionId());
-
-    DataStore::syncWallet(toWalletId);
-    DataStore::syncWallet(SYSTEM_WALLET_ID);
-
-    std::cout << "✅ Da cap " << amount << " diem cho vi " << toWalletId << std::endl;
-    return true;
-}
