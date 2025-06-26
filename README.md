@@ -11,7 +11,7 @@ Hệ thống quản lý tài khoản người dùng và ví điểm thưởng, �
 * Đăng ký tài khoản mới (tự tạo hoặc quản lý tạo hộ).
 * Kiểm tra trùng `username`, `phone number`.
 * Hỗ trợ sinh mật khẩu tự động.
-* Phân quyền: `User`, `Manager`, `SuperAdmin`.
+* Phân quyền: `User`, `Manager`.
 * Lưu trữ định dạng JSON, tự động backup khi cập nhật.
 
 ### 🔐 2. Đăng nhập & bảo mật
