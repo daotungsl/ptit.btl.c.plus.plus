@@ -138,7 +138,7 @@ void showTransactionHistory(User& user) {
     bool found = false;
     for (const auto& tx : transactions) {
         if (tx.getFromWalletId() == walletId || tx.getToWalletId() == walletId) {
-            print(tx.toString(), true);
+            print(tx.toString(), true,ConsoleColor::Blue);
             found = true;
         }
     }

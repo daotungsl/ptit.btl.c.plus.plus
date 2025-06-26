@@ -41,12 +41,12 @@ void showUserMenu(User& currentUser) {
             case 3: {
                 std::string newPass = input("Nhap mat khau moi: ");
                 if (!OtpManager::confirmOtpForAction(currentUser.getPhoneNumber())) {
-                print("Xac thuc OTP that bai.", true);
+                print("Xac thuc OTP that bai.", true,ConsoleColor::Red);
                 break;
                 }
                 currentUser.setPassword(newPass);
                 DataStore::syncUser(currentUser); // ✅ đồng bộ user sau đổi mật khẩu
-                print("Da cap nhat mat khau!", true);
+                print("Da cap nhat mat khau!", true,ConsoleColor::Green);
                 break;
             }
             case 4:
